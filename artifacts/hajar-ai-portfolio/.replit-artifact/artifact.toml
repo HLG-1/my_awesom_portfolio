@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Hajar — AI Portfolio"
+description = "A cinematic personal portfolio for Hajar EL HALLAGUE, an ENSIAS AI engineering student exploring machine learning, nature-inspired optimization, and intelligent systems."
+version = "1.0.0"
+id = "artifacts/hajar-ai-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23758
+
+[services.development]
+run = "pnpm --filter @workspace/hajar-ai-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/hajar-ai-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/hajar-ai-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23758"
+BASE_PATH = "/"
