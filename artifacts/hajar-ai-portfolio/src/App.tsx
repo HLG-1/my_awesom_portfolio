@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowDownRight, ArrowRight, Download, Github, Mail, Menu, MoveUpRight, X } from 'lucide-react';
+import { ArrowDownRight, ArrowRight, Github, Mail, Menu, MoveUpRight, X } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -59,6 +59,7 @@ type PortfolioProject = {
   contribution: string;
   result?: string;
   tech: string[];
+  repo?: string | string[];
 };
 
 const projects: PortfolioProject[] = [
@@ -72,6 +73,7 @@ const projects: PortfolioProject[] = [
     contribution: 'Worked on automated footprint extraction using YOLO and SAM 3, a Dagster pipeline with Docker services, and height estimation experiments with Depth Anything V2, DepthPro and HTC-DC Net.',
     result: 'Fine-tuned Depth Anything V2 achieved 0.967 m MAE on the test set.',
     tech: ['Python', 'PyTorch', 'YOLO', 'SAM 3', 'Docker', 'Dagster', 'QGIS'],
+    repo: ['https://github.com/HLG-1/crts2_bench_haut_new20', 'https://github.com/HLG-1/dagster_pipeline_crts'],
   },
   {
     id: '02',
@@ -81,6 +83,7 @@ const projects: PortfolioProject[] = [
     problem: 'Exploring how knowledge from multiple teacher architectures can support semantic segmentation of medical 3D point clouds.',
     contribution: 'The current direction includes multi-teacher distillation, a lightweight student, and comparison using mIoU and Dice. This work is ongoing; no final outcome is claimed.',
     tech: ['PyTorch', 'Point Clouds', 'Knowledge Distillation', 'Medical AI'],
+    repo: 'https://github.com/HLG-1/MTKD-for-3D-anatomical-structure-segmentation',
   },
   {
     id: '03',
@@ -99,6 +102,7 @@ const projects: PortfolioProject[] = [
     problem: 'Supporting analysis of antibiotic resistance through prediction, forecasting and multi-source data ingestion.',
     contribution: 'Project scope includes machine-learning models and a complete MLOps pipeline. Specific outcomes are not stated in the supplied brief.',
     tech: ['Python', 'XGBoost', 'FastAPI', 'MLflow', 'Docker', 'Airflow', 'RAG'],
+    repo: 'https://github.com/HLG-1/my-awesome-PFA-2A',
   },
   {
     id: '05',
@@ -204,57 +208,6 @@ const navItems = [
   ['Journey', '#journey'],
 ];
 
-function downloadCv() {
-  const cv = `HAJAR EL HALLAGUE
-AI Engineering Student | Machine Learning & Nature-Inspired Optimization Enthusiast
-ENSIAS – National School of Computer Science and Systems Analysis, Morocco
-
-PROFILE
-Artificial Intelligence engineering student interested in machine learning, mathematical optimization, robotics, and nature-inspired intelligence.
-
-OBJECTIVE
-Seeking a 4–6 month Final Year Internship (PFE) starting February 2027, preferably in AI, Machine Learning, Deep Learning, or AI Research.
-
-EDUCATION
-2024–2027 — ENSIAS, Engineering Degree in Artificial Intelligence
-2022–2024 — Preparatory Classes, Mathematics and Physics (MP)
-2022 — Mathematical Sciences Baccalaureate with Highest Honors
-
-EXPERIENCE & PROJECTS
-2026 — CRTS, Royal Center for Remote Sensing: building footprint extraction from very-high-resolution orthophotos; YOLO, SAM 3, Dagster and Docker workflow; building height estimation using Depth Anything V2, DepthPro and HTC-DC Net. Fine-tuned Depth Anything V2 achieved 0.967 m MAE on the test set.
-2025 — HCP Regional Directorate: data analysis and census visualization.
-Multi-Teacher Knowledge Distillation for 3D Medical Segmentation — Ongoing research project.
-NIDS Validity Audit: Robust SVM and Certificates — Ongoing research project.
-Additional project work: antibiotic resistance prediction and forecasting; swarm robotics; pediatric AI wearable concept; 3D classification with federated learning and distillation; RAG research assistant (retrieval hit rate improved from 78% to 91%); HCP census data visualization.
-
-RESEARCH INTERESTS
-Machine Learning, Deep Learning, bio-inspired optimization, Ant Colony Optimization, swarm intelligence, evolutionary algorithms, multi-agent systems, computer vision, 3D vision, medical AI, LLMs, RAG, agentic AI, robust optimization, trustworthy AI, MLOps and intelligent systems.
-
-TECHNICAL SKILLS
-Programming: Python, C/C++, Java, R, SQL.
-AI & ML: PyTorch, TensorFlow, Scikit-learn, Hugging Face, XGBoost, ONNX.
-Research: Knowledge Distillation, Federated Learning, Robust SVM, Computer Vision, NLP, LLMs.
-Optimization: Ant Colony Optimization, Swarm Intelligence, Evolutionary Algorithms, Mathematical Optimization.
-Robotics & 3D: ROS 2, Gazebo, 3D Vision, Point Clouds, Remote Sensing.
-Engineering: Docker, MLflow, DVC, Airflow, Dagster, FastAPI, Git.
-
-COMMUNITY
-Darlkhir — Core Development Team Member and Communications Lead.
-
-CONTACT
-Email: hajarelhallague@gmail.com
-GitHub: https://github.com/HLG-1
-`;
-  const blob = new Blob([cv], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = 'Hajar-El-Hallague-CV.txt';
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 function App() {
   const [selectedGalaxy, setSelectedGalaxy] = useState(1);
@@ -308,7 +261,6 @@ function App() {
           <div className="hero-actions">
             <a className="button primary" href="#about" data-testid="link-explore">Explore my universe <ArrowDownRight size={15} aria-hidden="true" /></a>
             <a className="button" href="#projects" data-testid="link-projects">View my projects <ArrowRight size={15} aria-hidden="true" /></a>
-            <button className="button text-button" type="button" onClick={downloadCv} data-testid="button-download-cv"><Download size={14} aria-hidden="true" /> Download CV</button>
           </div>
         </div>
         <div className="hero-visual" aria-label="An abstract orbital map with a central star">
@@ -407,7 +359,29 @@ function App() {
                 </div>
               </details>
               <div className="tech-list">{project.tech.map((tech) => <span className="tech-chip" key={tech}>{tech}</span>)}</div>
-              <div className="project-footer"><span>{project.id === '02' || project.id === '03' ? 'Research in progress' : 'Project record'}</span><span className="github-note">Repository link not supplied</span></div>
+              <div className="project-footer">
+                <span>{project.id === '02' || project.id === '03' ? 'Research in progress' : 'Project record'}</span>
+                {project.repo ? (
+                  Array.isArray(project.repo) ? (
+                    <div className="repo-links">
+                      {project.repo.map((r, i) => {
+                        const repoArray = project.repo as string[];
+                        return (
+                          <a key={i} href={r} target="_blank" rel="noreferrer" className="github-note">
+                            Repository {repoArray.length > 1 ? `${i + 1}` : ''} <MoveUpRight size={12} aria-hidden="true" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <a href={project.repo} target="_blank" rel="noreferrer" className="github-note">
+                      Repository <MoveUpRight size={12} aria-hidden="true" />
+                    </a>
+                  )
+                ) : (
+                  <span className="github-note">Repository link not supplied</span>
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -485,7 +459,6 @@ function App() {
           <p className="contact-lede">Interested in collaborating, exchanging ideas, discussing research, or building intelligent systems together? Let’s connect.</p>
           <div className="contact-links">
             <a className="button primary" href="mailto:hajarelhallague@gmail.com" data-testid="link-contact-email"><Mail size={15} aria-hidden="true" /> Contact me <MoveUpRight size={13} aria-hidden="true" /></a>
-            <button className="button" type="button" onClick={downloadCv} data-testid="button-download-cv-footer"><Download size={14} aria-hidden="true" /> Download CV</button>
             <a className="button" href="https://github.com/HLG-1" target="_blank" rel="noreferrer" data-testid="link-github"><Github size={15} aria-hidden="true" /> GitHub <MoveUpRight size={12} aria-hidden="true" /></a>
           </div>
           <a className="contact-email" href="mailto:hajarelhallague@gmail.com" data-testid="link-email-address">hajarelhallague@gmail.com</a>
